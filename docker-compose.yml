@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  database:
+    container_name: database
+    image: mongo
+    restart: always
+
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+  # volumes:
+  #   - mongo_data/:/data/db
+
+  node-app:
+    container_name: node-app
+    restart: always
+    build: .
+    command: node index.js
+    depends_on:
+      - database
+    ports:
+      - "${PORT}:${PORT}"
+# volumes:
+#   mongo_data:

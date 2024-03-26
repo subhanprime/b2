@@ -1,0 +1,47 @@
+stages:
+#   - test
+  - deploy
+# before_script:
+#   # - chmod +x ./script.sh  # Make the 'script.sh' file executable
+#   # - ./script.sh           # Execute the 'script.sh' script
+ 
+# test:
+#   stage: test
+#   script:
+#     - npm install --force
+#     - sudo cp -r /home/envs/backendtypescrtip.env /home/gitlab-runner/builds/A9HWkquo/0/pendulum/admin/backend-typescript/.env
+#     - npm run test
+#     - npm run lint:ts
+#   only:
+#     - merge_requests
+#     - dev
+deploy:
+  stage: deploy
+  script:
+    # # Install ssh client if not available
+    # - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+
+    # # Start the ssh-agent
+    # - eval $(ssh-agent -s)
+
+    # # Add the SSH private key to the ssh-agent
+    # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+
+    # # Create and set permissions for the ssh directory
+    # - mkdir -p ~/.ssh
+    # - chmod 700 ~/.ssh
+
+    # # Disable strict host key checking and use an empty known hosts file
+    # - echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n\n" > ~/.ssh/config
+
+    # Connect to the server and execute deployment commands
+    - ssh $SSH_USER@$VM_IPADDRESS "
+      hostname && sudo -i &&
+      cd /home/txd/backend &&
+      sudo git checkout dev &&
+      git pull &&
+      npm install  &&
+      sudo pm2 restart 1 "
+  only:
+    - merge_requests
+    - dev # Only deploy on changes to the 'dev' branch
